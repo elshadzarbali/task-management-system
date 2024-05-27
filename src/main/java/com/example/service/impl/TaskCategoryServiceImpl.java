@@ -6,16 +6,16 @@ import com.example.service.TaskCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
+import java.util.Collections;
 import java.util.List;
 
 @Service("taskCategoryService")
 public class TaskCategoryServiceImpl implements TaskCategoryService {
-    @Autowired
-    private TaskCategoryRepository taskCategoryRepository;
+    private final TaskCategoryRepository taskCategoryRepository;
 
-    @Override
-    public TaskCategory getTaskCategory(int id) {
-        return taskCategoryRepository.findById(id).orElse(null);
+    public TaskCategoryServiceImpl(TaskCategoryRepository taskCategoryRepository) {
+        this.taskCategoryRepository = taskCategoryRepository;
     }
 
     @Override
@@ -24,17 +24,29 @@ public class TaskCategoryServiceImpl implements TaskCategoryService {
     }
 
     @Override
-    public void saveTaskCategory(TaskCategory taskCategory) {
-        taskCategoryRepository.save(taskCategory);
+    public TaskCategory getTaskCategoryById(Integer id) {
+        return taskCategoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Task category with id " + id + " not found"));
     }
 
     @Override
-    public void deleteTaskCategory(int id) {
-        taskCategoryRepository.deleteById(id);
-    }
-
-    @Override
-    public TaskCategory updateTaskCategory(TaskCategory taskCategory) {
+    public TaskCategory createTaskCategory(TaskCategory taskCategory) {
+        taskCategory.setId(null);
         return taskCategoryRepository.save(taskCategory);
+    }
+
+    @Override
+    public TaskCategory updateTaskCategory(Integer id, TaskCategory taskCategory) {
+        if (!taskCategoryRepository.existsById(id))
+            throw new EntityNotFoundException("Task category with id " + id + " not found");
+        taskCategory.setId(id);
+        return taskCategoryRepository.save(taskCategory);
+    }
+
+    @Override
+    public void deleteTaskCategory(Integer id) {
+        if (!taskCategoryRepository.existsById(id))
+            throw new EntityNotFoundException("Task category with id " + id + " not found");
+        taskCategoryRepository.deleteById(id);
     }
 }
