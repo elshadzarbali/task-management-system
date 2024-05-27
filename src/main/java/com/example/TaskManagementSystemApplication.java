@@ -1,9 +1,8 @@
-package com.example;
+package com.example.taskmanagementsystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-//@SpringBootApplication(scanBasePackages = "com.example")
 @SpringBootApplication
 public class TaskManagementSystemApplication {
 
